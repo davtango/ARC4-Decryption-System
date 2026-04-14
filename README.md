@@ -9,9 +9,23 @@ This is a public display repository for the DE1-SoC based ARC4 decryption system
 
 ## Implementation
 
-The ARC4 Decyption System was designed sequentially following the pseudo-algorithm on the Wikipedia page. There are three main modules: init.sv, ksa.sv, and prga.sv which are then driven sequentially by arc4.sv to decrypt a certain message given a known key. crack.sv implements an additional FSM to cycle through keys, repeatedly running arc4.sv and checking the plaintext result until a  fully human read-able string in ASCII is detected. doublecrack.sv and multicrack.sv are involved with the instantiations of 
+The ARC4 Decyption System was designed sequentially following the pseudo-algorithm on the Wikipedia page. There are three main modules: init.sv, ksa.sv, and prga.sv which are then driven sequentially by arc4.sv to decrypt a certain message given a known key. crack.sv implements an additional FSM to cycle through keys, repeatedly running arc4.sv and checking the plaintext result until a fully human read-able string in ASCII is detected. doublecrack.sv and multicrack.sv are involved with the instantiations of multiple crack cores. Each module is explained below:
 
 ### init.sv
+The purpose of this module is to initialize the instantiated 256 word cipher state memory S_MEM into an identity permutation:
+
+```
+for(i = 0; i < 255; i++) {
+  s[i] = i;
+}
+```
+
+State machine diagram:
+
+
+### ksa.sv
+The purpose of this module is t
+
 
 
 
