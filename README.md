@@ -1,4 +1,4 @@
-# Multi-Core ARC4-Decryption-System 
+# Multi-Core ARC4 Decryption System 
 
 ## Briefing
 This is a public display repository for the DE1-SoC FPGA-based ARC4 decryption system designed by David Tang and Hemat Wander for the 2025W2 CPEN 311 section. The multi-core functionality was implemented by David Tang as part of the course's bonus competition at the end of the term. All modules were written in SystemVerilog with the exception of the instantiated RAM IP modules from Quartus.
