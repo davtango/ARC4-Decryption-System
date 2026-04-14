@@ -86,9 +86,21 @@ crack.sv is a module that does four things: Enable arc4, check the plaintext out
 multicrack.sv is a module that instantiates multiple crack modules using generate blocks to achieve a faster decrpytion rate for the competition. Since each crack core reads from its own ciphertext RAM module (ctcore_mem.v), multicrack writes the user input top module ciphertext (ct_mem.v) into each ctcore memory block. Likewise each crack core also has its own plaintext RAM module and so multicrack also writes the correct plaintext message from one of the cores that has set its key valid flag high into the top module plaintext (pt_mem.v). 
 
 <p align="center">
-  <img src="State-Machine-Diagrams/crack.png" width="600">
+  <img src="State-Machine-Diagrams/multicrack.png" width="600">
 </p>
 
+### competition.sv
+competition.sv is the top module for the decryption system. It enables the multicrack module and is compliant with an 'MBOX' communication protocol listed below. It also contains combinational logic that displays the correct key in big-endian on the DE1-SoC board's HEX outputs and sets the row of LEDs to represent the bit value of the key valid flag. 
+```
+1. User loads ciphertext in RAM with instance ID 'CT' (for this project, ct_mem.v)
+2. User MBOX[0] to 'hFF to prompt competition.sv to enable multicrack. (for this project, mbox_mem.v)
+3. User waits until competition.sv sets MBOX[1] to 'hFF to signal completion of cracking. User is able to read the key in big-endian from MBOX[2:4] 
+4. User sets MBOX[0] to 'h00 to signal to competition that a new ciphertext may be provided for another round of cracking and waits one second. In this duration, competition.sv sets MBOX[1] to 'h00 to cease completion
+5. User capable of repeating steps 1-4 indefinitely
+```
+<p align="center">
+  <img src="State-Machine-Diagrams/multicrack.png" width="600">
+</p>
 
 
 
