@@ -13,8 +13,6 @@ The ARC4 Decyption System was designed sequentially following the pseudo-algorit
 
 Each module follows a ready-enable microprotocol. Each module and a diagram for its FSM is explained below:
 
-// For more details, I suggest viewing the commented .sv files included in this repository.
-
 ### init.sv
 The first step of decrypting ARC4 involves initializing the secret internal state 's' into the identity permutation. In our hardware implementation this is done by working with a generated 8-bit, 256 word RAM IP from Quartus (s_mem.v).
 ```
@@ -99,7 +97,7 @@ competition.sv is the top module for the decryption system. It enables the multi
 5. User capable of repeating steps 1-4 indefinitely
 ```
 <p align="center">
-  <img src="State-Machine-Diagrams/multicrack.png" width="600">
+  <img src="State-Machine-Diagrams/competition.png" width="600">
 </p>
 
 
