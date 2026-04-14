@@ -1,7 +1,7 @@
 # Multi-Core ARC4-Decryption-System 
 
 ## Briefing
-This is a public display repository for the FPGA DE1-SoC based ARC4 decryption system designed by David Tang and Hemat Wander for the 2025W2 CPEN 311 section. The multi-core functionality was implemented by David Tang as part of the course's bonus competition at the end of the term.
+This is a public display repository for the DE1-SoC FPGA-based ARC4 decryption system designed by David Tang and Hemat Wander for the 2025W2 CPEN 311 section. The multi-core functionality was implemented by David Tang as part of the course's bonus competition at the end of the term.
 
 ## ARC4 Background
 
@@ -9,9 +9,11 @@ This is a public display repository for the FPGA DE1-SoC based ARC4 decryption s
 
 ## Implementation
 
-The ARC4 Decyption System was designed sequentially following the pseudo-algorithm on the Wikipedia page (which has been converted to C here). There are three main modules: init.sv, ksa.sv, and prga.sv involved with implementing the ARC4 algorithm, which are then driven sequentially by arc4.sv to decrypt a certain message given a known key. crack.sv implements an additional FSM to cycle through keys, repeatedly running arc4.sv and checking the plaintext result until a fully human read-able string in ASCII is detected. doublecrack.sv and multicrack.sv are involved with the instantiations of multiple crack cores. 
+The ARC4 Decyption System was designed sequentially following the pseudo-algorithm on the Wikipedia page (which has been converted to C here). There are three main modules: init.sv, ksa.sv, and prga.sv involved with implementing the ARC4 algorithm, which are then driven sequentially by arc4.sv to decrypt a certain message given a known key. crack.sv implements an additional FSM to cycle through keys, repeatedly running arc4.sv and checking the plaintext result until a fully human read-able string in ASCII is detected. multicrack.sv is involved with the instantiations of multiple crack cores. competition.sv is the top-level module for the decryption system.
 
-Each module follows a ready-enable microprotocol. Each module is explained below:
+Each module follows a ready-enable microprotocol. Each module and a diagram for its FSM is explained below:
+
+// For more details, I suggest viewing the commented .sv files included in this repository.
 
 ### init.sv
 The first step of decrypting ARC4 involves initializing the secret internal state 's' into the identity permutation. In our hardware implementation this is done by working with a generated 8-bit, 256 word RAM IP from Quartus (s_mem.v).
@@ -74,9 +76,18 @@ arc4.sv is a module that enables init, ksa, and prga in a sequential order to de
 </p>
 
 ### crack.sv
-crack.sv is a module that does four things: Enable arc4, check the plaintext output for ASCII readability, increment the key if the plaintext output is not human-readable, and loop. A readable human ASCII output contains a string of bytes with hexadecimal characters between 'h20 and 'h7E inclusive. In the event that the entire plaintext string meets the aforementioned condition, a key valid flag is set high and the state returns to `READY exiting the loop. In the event that the key incrementer reaches its maximum value without a readable ASCII text detected, the state also returns to `READY but without setting the key valid flag high. Due to this cumulative functionality per module, **each instantiated crack is referred to as a core** for this project. 
+crack.sv is a module that does four things: Enable arc4, check the plaintext output for ASCII readability, increment the key if the plaintext output is not human-readable, and loop. A readable human ASCII output contains a string of bytes with hexadecimal characters between 'h20 and 'h7E inclusive. In the event that the entire plaintext string meets the aforementioned condition, a key valid flag is set high and the state returns to READY exiting the loop. In the event that the key incrementer reaches its maximum value without a readable ASCII text detected, the state also returns to READY but without setting the key valid flag high. Due to this cumulative functionality per module, **each instantiated crack is referred to as a core** for this project. 
 
+<p align="center">
+  <img src="State-Machine-Diagrams/crack.png" width="600">
+</p>
 
+### multicrack.sv
+multicrack.sv is a module that instantiates multiple crack modules using generate blocks to achieve a faster decrpytion rate for the competition. Since each crack core reads from its own ciphertext RAM module (ctcore_mem.v), multicrack writes the user input top module ciphertext (ct_mem.v) into each ctcore memory block. Likewise each crack core also has its own plaintext RAM module and so multicrack also writes the correct plaintext message from one of the cores that has set its key valid flag high into the top module plaintext (pt_mem.v). 
+
+<p align="center">
+  <img src="State-Machine-Diagrams/crack.png" width="600">
+</p>
 
 
 
