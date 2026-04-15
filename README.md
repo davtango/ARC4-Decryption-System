@@ -1,15 +1,21 @@
 # Multi-Core ARC4 Decryption System 
 
 ## Briefing
-This is a public display repository for the DE1-SoC FPGA-based ARC4 decryption system designed by David Tang and Hemat Wander for the 2025W2 CPEN 311 section. The multi-core functionality was implemented by David Tang as part of the course's bonus competition at the end of the term. All modules were written in SystemVerilog with the exception of the instantiated RAM IP modules from Quartus.
+Multi-core ARC4 brute-force decryption system implemented in SystemVerilog on a Cyclone V FPGA. Designed by David Tang, with testbench contributions up to dual-core functionality by Hemat Wander during the CPEN 311 2025W2 session.
+
+## Key Results
+- 81 parallel cracking cores
+- ~1.87 million keys/sec throughput
+- 35–39× speedup over baseline dual core implementation
+- 92% FPGA utilization (Cyclone V)
 
 ## ARC4 Background
 
-[ARC4](https://en.wikipedia.org/wiki/RC4) is a symmetric stream cipher historically used as part of some encryption protocols for wireless data. ARC4 generates a pseudo-random byte stream using a given key that is then XOR'd with the plaintext to provide a ciphertext message. The XOR operation is symmetrical, so both the encryption and decryption processes are the same. This decryption system implements a "brute-force attack" where it sifts through all the keys within the given key space until a successful decryption is completed.
+[ARC4](https://en.wikipedia.org/wiki/RC4) is a symmetric stream cipher historically used as part of some encryption protocols for wireless data. ARC4 generates a pseudo-random byte stream using a given key that is then XOR'd with the plaintext to provide a ciphertext message. The XOR operation is symmetrical, so both the encryption and decryption processes are the same. This decryption system implements a brute-force attack where it sifts through all the keys within a 3-byte keyspace until a successful decryption is completed.
 
 ## Implementation
 
-The ARC4 Decyption System was designed sequentially following the pseudo-algorithm on the Wikipedia page (which has been converted to C here). There are three main modules: init.sv, ksa.sv, and prga.sv involved with implementing the ARC4 algorithm, which are then driven sequentially by arc4.sv to decrypt a certain message given a known key. crack.sv implements an additional FSM to cycle through keys, repeatedly running arc4.sv and checking the plaintext result until a fully human read-able string in ASCII is detected. multicrack.sv is involved with the instantiations of multiple crack cores. competition.sv is the top-level module for the decryption system.
+The ARC4 Decryption System was designed sequentially following the pseudo-algorithm on the Wikipedia page (which has been converted to C here). There are three main modules: init.sv, ksa.sv, and prga.sv involved with implementing the ARC4 algorithm, which are then driven sequentially by arc4.sv to decrypt a certain message given a known key. crack.sv implements an additional FSM to cycle through keys, repeatedly running arc4.sv and checking the plaintext result until a fully human read-able string in ASCII is detected. multicrack.sv is involved with the instantiations of multiple crack cores. competition.sv is the top-level module for the decryption system.
 
 Each module follows a ready-enable microprotocol, where a 'ready' signal is used for each module to denote when it is ready to be enabled. Each module and a diagram for its FSM is explained below:
 
@@ -137,8 +143,8 @@ The final implementation instantiated 81 crack cores and utilized 29,523/32070 o
 
 ## Concluding Remarks
 
-If I have time to return to this project, I may consider increasing the clock frequency by incorporating a PLL IP from Quartus to scale up the default board 50 MHz and accelerate the key-sifting speeds even further. 
+Future work could include increasing the clock frequency using a PLL IP to further accelerate key-sifting throughput.
 
-For further details, I recommend reading the comments in both the design and testbench SystemVerilog files located in the src and tb folders respectively.
+For more details, see the comments and RTL in the .sv files.
 
-**Thanks for checking out this project!**
+**Thanks for reading!**
