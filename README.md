@@ -21,7 +21,7 @@ for(i = 0; i < 256; i++) {
 }
 ```
 <p align="center">
-  <img src="State-Machine-Diagrams/init.png" width="600">
+  <img src="pictures/init.png" width="600">
 </p>
 
 ### ksa.sv
@@ -38,7 +38,7 @@ for(i = 0; i < 256; i++) {
 }
 ```
 <p align="center">
-  <img src="State-Machine-Diagrams/ksa.png" width="600">
+  <img src="pictures/ksa.png" width="600">
 </p>
 
 ### prga.sv
@@ -62,28 +62,28 @@ for(k = 1; k <= message_length; k++) {
 }
 ```
 <p align="center">
-  <img src="State-Machine-Diagrams/prga.png" width="600">
+  <img src="pictures/prga.png" width="600">
 </p>
 
 ### arc4.sv
 arc4.sv is a module that enables init, ksa, and prga in a sequential order to decrypt a ciphertext given that it is supplied the correct key for that given ciphertext. In other words, every time it is enabled it operates the decyption process once.
 
 <p align="center">
-  <img src="State-Machine-Diagrams/arc4.png" width="600">
+  <img src="pictures/arc4.png" width="600">
 </p>
 
 ### crack.sv
 crack.sv is a module that does four things: Enable arc4, check the plaintext output for ASCII readability, increment the key if the plaintext output is not human-readable, and loop. A readable human ASCII output contains a string of bytes with hexadecimal characters between 'h20 and 'h7E inclusive. In the event that the entire plaintext string meets the aforementioned condition, a key valid flag is set high and the state returns to READY exiting the loop. In the event that the key incrementer reaches its maximum value without a readable ASCII text detected, the state also returns to READY but without setting the key valid flag high. Due to this cumulative functionality per module, each instantiated crack is **referred to as a core** for this project. 
 
 <p align="center">
-  <img src="State-Machine-Diagrams/crack.png" width="600">
+  <img src="pictures/crack.png" width="600">
 </p>
 
 ### multicrack.sv
 multicrack.sv is a module that instantiates multiple crack modules using generate blocks to achieve a faster decrpytion rate for the competition. Since each crack core reads from its own ciphertext RAM module (ctcore_mem.v), multicrack writes the user input top module ciphertext (ct_mem.v) into each ctcore memory block. Likewise each crack core also has its own plaintext RAM module and so multicrack also writes the correct plaintext message from one of the cores that has set its key valid flag high into the top module plaintext (pt_mem.v). 
 
 <p align="center">
-  <img src="State-Machine-Diagrams/multicrack.png" width="600">
+  <img src="pictures/multicrack.png" width="600">
 </p>
 
 ### competition.sv
@@ -96,16 +96,16 @@ competition.sv is the top module for the decryption system. It enables the multi
 5. User is capable of repeating steps 1-4 indefinitely
 ```
 <p align="center">
-  <img src="State-Machine-Diagrams/competition.png" width="600">
+  <img src="pictures/competition.png" width="600">
 </p>
 
 **Here are some images of decryption on the DE1-SoC:**
 
 <p align="center">
-  <img src="State-Machine-Diagrams/ismce_view.png" width="600">
+  <img src="pictures/ismce_view.png" width="600">
 </p>
 <p align="center">
-  <img src="State-Machine-Diagrams/key_view.png" width="600">
+  <img src="pictures/key_view.png" width="600">
 </p>
 
 ## Decryption Results 
@@ -132,7 +132,7 @@ In addition, here are some comparison benchmarks between the pre-bonus implement
 The final implementation instantiated 81 crack cores and utilized 29,523/32070 or 92% of all ALMs on the Cyclone V FPGA. The system also runs on the default 50 MHz clock frequency of the DE1-SoC board. Attached below is a block diagram depicting all module instantiations, with the RAM IP instantiations denoted by their instance IDs in grey text:
 
 <p align="center">
-  <img src="State-Machine-Diagrams/instantiations.png" width="600">
+  <img src="pictures/instantiations.png" width="600">
 </p>
 
 ## Concluding Remarks
